@@ -1,3 +1,6 @@
+import { objectMap } from './types';
+import { isStringOrNumber } from './core';
+
 /**
  * array里可以是纯字符串，也可以是对象
  * 如果是对象，keys参数可以传入要搜索的key
@@ -11,11 +14,11 @@
  * @param {string} [keywords='']
  * @return {array}
  */
-export function searchAndSort(array = [], keys = [], keywords = '') {
-  if (!keywords || typeof keywords === 'object') return array;
-  keywords = `${keywords}`.toUpperCase();
+export function searchAndSort(array: Array<string | objectMap> = [], keywords: string = '', keys: Array<string> = []) {
+  if (!keywords) return array;
+  keywords = keywords.toUpperCase();
   const results = [];
-  function calcScore(v, keyIndex = -1) {
+  function calcScore(v: string, keyIndex: number = -1) {
     let score = 0;
     let index = v.indexOf(keywords);
     if (index > -1) {
@@ -37,12 +40,12 @@ export function searchAndSort(array = [], keys = [], keywords = '') {
     const item = array[i];
     let currentWeight = 0;
     if (!item) continue;
-    if (typeof item !== 'object') {
+    if (isStringOrNumber(item)) {
       currentWeight = calcScore(`${item}`.toUpperCase());
     } else {
       for (let j = 0; j < keys.length; j++) {
-        let v = item[keys[j]] ?? '';
-        if (!v) continue;
+        let v = (item as objectMap)[keys[j]] ?? '';
+        if (!v || !isStringOrNumber(v)) continue;
         v = `${v}`.toUpperCase();
         currentWeight += calcScore(v, j);
       }
