@@ -12,8 +12,11 @@ export interface SearchAndSortParams {
 }
 export interface InitRequestParams extends AxiosRequestConfig {
   retry?: Boolean;
+  maxRetry?: number;
 }
 export interface SendRequestParams extends AxiosRequestConfig {
   onSuccess?: Function;
   onError?: Function;
+  ignoreBefore?: boolean;
+  __id?: number;
 }
