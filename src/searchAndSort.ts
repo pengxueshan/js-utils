@@ -14,11 +14,15 @@ import { isStringOrNumber } from './core';
  * @param {array} [keys=[]]
  * @return {array}
  */
-export function searchAndSort({ data, keywords, keys = [] }: searchAndSortParams) {
+export function searchAndSort({ data, keywords, keys = [], ignoreCase = true }: searchAndSortParams) {
   if (!keywords) return data;
-  keywords = keywords.toUpperCase();
   const results = [];
-  function calcScore(v: string, keyIndex: number = -1) {
+  function calcScore(v: any, keyIndex: number = -1) {
+    v = `${v}`;
+    if (ignoreCase) {
+      v = v.toUpperCase();
+      keywords = keywords.toUpperCase();
+    }
     let score = 0;
     let index = v.indexOf(keywords);
     if (index > -1) {
@@ -41,12 +45,11 @@ export function searchAndSort({ data, keywords, keys = [] }: searchAndSortParams
     let currentWeight = 0;
     if (!item) continue;
     if (isStringOrNumber(item)) {
-      currentWeight = calcScore(`${item}`.toUpperCase());
+      currentWeight = calcScore(item);
     } else {
       for (let j = 0; j < keys.length; j++) {
         let v = (item as objectMap)[keys[j]] ?? '';
         if (!v || !isStringOrNumber(v)) continue;
-        v = `${v}`.toUpperCase();
         currentWeight += calcScore(v, j);
       }
     }
