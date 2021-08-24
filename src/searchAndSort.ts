@@ -1,4 +1,4 @@
-import { objectMap, searchAndSortParams } from './types';
+import { ObjectMap, SearchAndSortParams } from './types';
 import { isStringOrNumber } from './core';
 
 /**
@@ -15,7 +15,7 @@ import { isStringOrNumber } from './core';
  * @param {boolean} [ignoreCase=true]
  * @return {array}
  */
-export function searchAndSort({ data = [], keywords, keys = [], ignoreCase = true }: searchAndSortParams) {
+export function searchAndSort({ data = [], keywords, keys = [], ignoreCase = true }: SearchAndSortParams) {
   if (!keywords) return data;
   const results = [];
   for (let i = 0; i < data.length; i++) {
@@ -26,7 +26,7 @@ export function searchAndSort({ data = [], keywords, keys = [], ignoreCase = tru
       currentWeight = calcScore({ value: item, keywords, ignoreCase });
     } else {
       for (let j = 0; j < keys.length; j++) {
-        let v = (item as objectMap)[keys[j]] ?? '';
+        let v = (item as ObjectMap)[keys[j]] ?? '';
         if (!v || !isStringOrNumber(v)) continue;
         currentWeight += calcScore({ value: v, keywords, keyIndex: j, keys, ignoreCase });
       }
