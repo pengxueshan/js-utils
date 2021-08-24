@@ -10,11 +10,12 @@ import { isStringOrNumber } from './core';
  * 计算得出
  * @export
  * @param {array} [data=[]]
- * @param {string} [keywords='']
+ * @param {string} [keywords]
  * @param {array} [keys=[]]
+ * @param {boolean} [ignoreCase=true]
  * @return {array}
  */
-export function searchAndSort({ data, keywords, keys = [], ignoreCase = true }: searchAndSortParams) {
+export function searchAndSort({ data = [], keywords, keys = [], ignoreCase = true }: searchAndSortParams) {
   if (!keywords) return data;
   const results = [];
   for (let i = 0; i < data.length; i++) {
