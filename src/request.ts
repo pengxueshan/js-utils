@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { pick } from './core';
 import { ObjectMap, SendRequestParams, InitRequestParams } from './types';
 
@@ -34,6 +34,10 @@ const axiosOpts = [
   'decompress',
 ];
 
+/// 基于axios实现的request封装
+/// 支持请求前拦截、失败重试
+/// 或者直接调用axios发送请求: requestAxios
+/// 获取当前axios实例: getInstance
 class Request {
   constructor(options: InitRequestParams) {
     const [picked, unpicked] = pick(options, axiosOpts);
@@ -42,7 +46,7 @@ class Request {
       timeout: 5000,
       ...picked
     });
-    this.retry = unpicked.retry ?? true;
+    this.retry = unpicked.retry ?? false;
     this.maxRetry = unpicked.maxRetry ?? 1;
   }
 
@@ -151,6 +155,15 @@ class Request {
       d[1]?.();
     });
   }
+
+  requestAxios(opts: AxiosRequestConfig) {
+    return axios.request(opts);
+  }
+
+  getInstance() {
+    return this.instance;
+  }
 }
 
 export { Request };
+export default Request;
