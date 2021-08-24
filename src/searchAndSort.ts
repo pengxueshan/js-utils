@@ -1,4 +1,4 @@
-import { objectMap } from './types';
+import { objectMap, searchAndSortParams } from './types';
 import { isStringOrNumber } from './core';
 
 /**
@@ -9,13 +9,13 @@ import { isStringOrNumber } from './core';
  * keys的优先级 + 匹配到的位置 + 匹配到的字符串占总字符串百分比
  * 计算得出
  * @export
- * @param {array} [array=[]]
- * @param {array} [keys=[]]
+ * @param {array} [data=[]]
  * @param {string} [keywords='']
+ * @param {array} [keys=[]]
  * @return {array}
  */
-export function searchAndSort(array: Array<string | objectMap> = [], keywords: string = '', keys: Array<string> = []) {
-  if (!keywords) return array;
+export function searchAndSort({ data, keywords, keys = [] }: searchAndSortParams) {
+  if (!keywords) return data;
   keywords = keywords.toUpperCase();
   const results = [];
   function calcScore(v: string, keyIndex: number = -1) {
@@ -36,8 +36,8 @@ export function searchAndSort(array: Array<string | objectMap> = [], keywords: s
     }
     return score;
   }
-  for (let i = 0; i < array.length; i++) {
-    const item = array[i];
+  for (let i = 0; i < data.length; i++) {
+    const item = data[i];
     let currentWeight = 0;
     if (!item) continue;
     if (isStringOrNumber(item)) {
