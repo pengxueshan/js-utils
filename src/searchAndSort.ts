@@ -17,40 +17,17 @@ import { isStringOrNumber } from './core';
 export function searchAndSort({ data, keywords, keys = [], ignoreCase = true }: searchAndSortParams) {
   if (!keywords) return data;
   const results = [];
-  function calcScore(v: any, keyIndex: number = -1) {
-    v = `${v}`;
-    if (ignoreCase) {
-      v = v.toUpperCase();
-      keywords = keywords.toUpperCase();
-    }
-    let score = 0;
-    let index = v.indexOf(keywords);
-    if (index > -1) {
-      let matchPercent = Math.round((keywords.length / v.length) * 9);
-      if (keyIndex > -1) {
-        let keyWeightArr = new Array(keys.length).fill('000');
-        keyWeightArr[keyIndex] = 100;
-        keyWeightArr[keyIndex] += (9 - index) * 10;
-        keyWeightArr[keyIndex] += matchPercent;
-        score = +keyWeightArr.join('');
-      } else {
-        score += (9 - index) * 10;
-        score += matchPercent;
-      }
-    }
-    return score;
-  }
   for (let i = 0; i < data.length; i++) {
     const item = data[i];
     let currentWeight = 0;
     if (!item) continue;
     if (isStringOrNumber(item)) {
-      currentWeight = calcScore(item);
+      currentWeight = calcScore({ value: item, keywords, ignoreCase });
     } else {
       for (let j = 0; j < keys.length; j++) {
         let v = (item as objectMap)[keys[j]] ?? '';
         if (!v || !isStringOrNumber(v)) continue;
-        currentWeight += calcScore(v, j);
+        currentWeight += calcScore({ value: v, keywords, keyIndex: j, keys, ignoreCase });
       }
     }
     if (currentWeight > 0) {
@@ -64,4 +41,35 @@ export function searchAndSort({ data, keywords, keys = [], ignoreCase = true }: 
     return b.weight - a.weight;
   });
   return results.map((d) => d.data);
+}
+
+interface calcScoreParams {
+  value: any;
+  keywords: string;
+  keyIndex?: number;
+  keys?: Array<string>;
+  ignoreCase?: boolean;
+}
+function calcScore({ value, keyIndex = -1, keywords, keys = [], ignoreCase }: calcScoreParams) {
+  value = `${value}`;
+  if (ignoreCase) {
+    value = value.toUpperCase();
+    keywords = keywords.toUpperCase();
+  }
+  let score = 0;
+  let index = value.indexOf(keywords);
+  if (index > -1) {
+    let matchPercent = Math.round((keywords.length / value.length) * 9);
+    if (keyIndex > -1) {
+      let keyWeightArr = new Array(keys.length).fill('000');
+      keyWeightArr[keyIndex] = 100;
+      keyWeightArr[keyIndex] += (9 - index) * 10;
+      keyWeightArr[keyIndex] += matchPercent;
+      score = +keyWeightArr.join('');
+    } else {
+      score += (9 - index) * 10;
+      score += matchPercent;
+    }
+  }
+  return score;
 }
