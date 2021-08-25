@@ -165,5 +165,4 @@ class Request {
   }
 }
 
-export { Request };
 export default Request;
