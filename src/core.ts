@@ -20,3 +20,7 @@ export function pick(source: ObjectMap = {}, keys: Array<string> = []) {
   }
   return [picked, unpicked];
 }
+
+export function isBrowser() {
+  return typeof window !== 'undefined' && typeof document !== 'undefined';
+}
